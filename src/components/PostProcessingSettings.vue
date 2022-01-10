@@ -16,6 +16,7 @@
         step="1"
         thumb-label="always"
     ></v-slider>
+    <v-btn color="primary" @click="save">Save</v-btn>
   </v-form>
 </template>
 
@@ -26,7 +27,16 @@ export default {
             num_passes: 3,
             num_swaps: 2
         })
+    },
+  methods: {
+    save: function(){
+      console.log(this.$data)
+      this.$store.commit("setOption", ["postprocessing", this.$data])
     }
+  },
+  created() {
+    this.save()
+  }
 }
 </script>
 

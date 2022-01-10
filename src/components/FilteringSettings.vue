@@ -40,6 +40,7 @@
             step="0.01"
             thumb-label="always"
         ></v-slider>
+      <v-btn color="primary" @click="save">Save</v-btn>
     </v-form>
 </template>
 
@@ -54,7 +55,16 @@ export default {
             icon_text_merge_threshold: 0.15
                 
         })
+    },
+  methods: {
+    save: function(){
+      console.log(this.$data)
+      this.$store.commit("setOption", ["filtering", this.$data])
     }
+  },
+  created() {
+    this.save()
+  }
 }
 </script>
 

@@ -8,6 +8,7 @@ import appdirs
 import pathlib
 import shutil
 import tempfile
+from flask_cors import CORS
 
 
 # Setup the directories where the data will be written
@@ -27,26 +28,28 @@ pathlib.Path(cache_dir).mkdir(parents=True, exist_ok=True)
 
 # Create flask app
 app = Flask(__name__)
-
+CORS(app)
 
 @app.route("/run", methods=['POST'])
 def run():
-    for file in os.listdir(image_dir):
-        path = os.path.join(image_dir, file)
-        os.remove(path)
-
-    for file in os.listdir(data_dir):
-        if "pickle" not in file:
-            path = os.path.join(data_dir, file)
+    try:
+        for file in os.listdir(image_dir):
+            path = os.path.join(image_dir, file)
             os.remove(path)
 
-    images = request.json["images"]
-    app.logger.info(images)
+        for file in os.listdir(data_dir):
+            if "pickle" not in file:
+                path = os.path.join(data_dir, file)
+                os.remove(path)
 
+        images = request.json["input_files"]
+        config = request.json["options"]
 
-    all_objs = detection.main(images, image_dir, cache_dir)
-    all_objs = filtering.main(all_objs, images, image_dir)
-    all_clusters = clustering.main(all_objs, images, image_dir)
-    postprocessing.main(all_clusters, images, data_dir, image_dir)
+        all_objs = detection.main(images, image_dir, cache_dir)
+        all_objs = filtering.main(all_objs, images, image_dir)
+        all_clusters = clustering.main(all_objs, images, image_dir)
+        postprocessing.main(all_clusters, images, data_dir, image_dir)
 
-    return {"image_dir": image_dir, "data_dir": data_dir}
+        return {"image_dir": image_dir, "data_dir": data_dir, "error": None}
+    except Exception as ex:
+        return {"image_dir": image_dir, "data_dir": data_dir, "error": str(ex)}

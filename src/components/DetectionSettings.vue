@@ -12,6 +12,7 @@
       label="OCR Languages"
       multiple
     ></v-select>
+    <v-btn color="primary" @click="save">Save</v-btn>
   </v-form>
 </template>
 
@@ -28,6 +29,15 @@ export default {
       ocr_langs: ocr_langs
     };
   },
+  methods: {
+    save: function(){
+      console.log(this.$data)
+      this.$store.commit("setOption", ["detection", this.$data])
+    }
+  },
+  created() {
+    this.save()
+  }
 };
 </script>
 

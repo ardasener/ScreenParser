@@ -32,9 +32,10 @@
       step="0.1"
       thumb-label="always"
     ></v-slider>
-    <v-radio-group v-model="clustering_alg" row>
+    <v-radio-group v-model="clustering_alg" row class="m-5">
       <v-radio label="DBScan" value="dbscan"></v-radio>
       <v-radio label="MeanShift" value="meanshift"></v-radio>
+      <v-radio label="Affinity Propagation"></v-radio>
     </v-radio-group>
      <v-slider
       v-model="dbscan_eps"
@@ -72,8 +73,7 @@
       step="1"
       thumb-label="always"
     ></v-slider>
-
-
+    <v-btn color="primary" @click="save">Save</v-btn>
   </v-form>
 </template>
 
@@ -92,6 +92,15 @@ export default {
       ms_n_samples: 10
     };
   },
+  methods: {
+    save: function(){
+      console.log(this.$data)
+      this.$store.commit("setOption", ["clustering", this.$data])
+    }
+  },
+  created() {
+    this.save()
+  }
 };
 </script>
 

@@ -15,6 +15,7 @@
   "dependencies": {
     "@tailwindcss/postcss7-compat": "^2.2.17",
     "autoprefixer": "^9",
+    "axios": "^0.24.0",
     "core-js": "^3.6.5",
     "highlight.js": "^11.3.1",
     "postcss": "^7",
@@ -23,7 +24,8 @@
     "vue": "^2.6.11",
     "vue-code-highlight": "^0.7.8",
     "vue-highlightjs": "^1.3.3",
-    "vuetify": "^2.4.0"
+    "vuetify": "^2.4.0",
+    "vuex": "^3.6.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
