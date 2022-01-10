@@ -2,18 +2,26 @@
   <v-app>
     <v-main>
       <v-stepper non-linear v-model="current_step">
-      <v-stepper-header>
-        <template v-for="(step,index) in steps">
-        <v-stepper-step :key="'step'+index" :step="index+1" editable>
-          {{step}}
-        </v-stepper-step>
-        <v-divider :key="'divide' + index" v-if="index < steps.length-1"></v-divider>
-        </template>
-      </v-stepper-header>
-    </v-stepper>
-    <v-row v-if="current_step === 1">
-      <image-input class="m-10 p-5"></image-input>
-    </v-row>
+        <v-row>
+          <v-col cols="2">
+            <python-runner></python-runner>
+          </v-col>
+
+          <v-col cols="22">
+            <v-stepper-header>
+              <template v-for="(step,index) in steps">
+                <v-stepper-step :key="'step'+index" :step="index+1" editable>
+                  {{ step }}
+                </v-stepper-step>
+                <v-divider :key="'divide' + index" v-if="index < steps.length-1"></v-divider>
+              </template>
+            </v-stepper-header>
+          </v-col>
+        </v-row>
+      </v-stepper>
+      <v-row v-if="current_step === 1">
+        <image-input class="m-10 p-5"></image-input>
+      </v-row>
       <v-row v-if="current_step !== 1 && current_step !== 6">
         <v-col align="center" justify="center" style="max-height: 80%" class="overflow-y-auto">
           <viewer :images="images">
@@ -47,7 +55,15 @@ import FilteringSettings from './components/FilteringSettings.vue';
 import PostProcessingSettings from './components/PostProcessingSettings.vue';
 import ImageInput from './components/ImageInput.vue';
 import 'highlight.js/styles/github.css'
+import PythonRunner from "./components/PythonRunner";
+import os from "os";
+import path from "path";
 
+const fs = require("fs")
+
+const home_dir = os.homedir()
+const root_dir = path.join(home_dir, "screenparser")
+const image_dir = path.join(root_dir, "images")
 
 const steps = [
   "Input",
@@ -55,7 +71,8 @@ const steps = [
   "Object Filtering",
   "Clustering",
   "Post Processing",
-  "Output"
+  "Output",
+  "PythonRunner"
 ]
 
 Vue.use(VueViewer)
@@ -63,6 +80,7 @@ export default {
   name: "App",
 
   components: {
+    PythonRunner,
     ClusteringSettings,
     DetectionSettings,
     FilteringSettings,
@@ -71,17 +89,19 @@ export default {
   },
 
   data: () => ({
-    images: [
-      "https://gitlab.com/ardasener/screenparserdata/-/raw/73413ea07349114b01b2a792e5873677f1e141a8/Car/citroen.png",
-      "https://gitlab.com/ardasener/screenparserdata/-/raw/main/DSLR/SonyDSLR.png",
-      "https://gitlab.com/ardasener/screenparserdata/-/raw/main/Car/honda.png",
-      "https://gitlab.com/ardasener/screenparserdata/-/raw/main/DSLR/NikonDSLR2.png",
-      "https://dappgrid.com/wp-content/uploads/2020/12/connect-metamask-to-uniswap.jpg",
-      "https://uploads.golmedia.net/uploads/articles/article_media/2485111481606160997gol1.jpg",
-    ],
     steps: steps,
     current_step: 1,
     xml_output: "<Hello><World></World></Hello>"
   }),
+  mounted() {
+    this.$vuetify.theme.dark = true
+  },
+  computed: {
+    images: function (){
+      var files = fs.readdirSync(image_dir)
+      console.log(files)
+      return files
+    }
+  }
 };
 </script>

@@ -8,7 +8,6 @@
       :items="ocr_langs"
       item-text="Name"
       item-value="Code"
-      attach
       chips
       label="OCR Languages"
       multiple
@@ -27,7 +26,6 @@ export default {
       gpu: false,
       selected_langs: ['en'],
       ocr_langs: ocr_langs
-
     };
   },
 };
