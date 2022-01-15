@@ -9,6 +9,9 @@ import pathlib
 import shutil
 import tempfile
 from flask_cors import CORS
+import logging
+import random
+
 
 
 # Setup the directories where the data will be written
@@ -30,6 +33,9 @@ pathlib.Path(cache_dir).mkdir(parents=True, exist_ok=True)
 app = Flask(__name__)
 CORS(app)
 
+logging.basicConfig(level=logging.DEBUG)
+
+
 @app.route("/run", methods=['POST'])
 def run():
     try:
@@ -44,11 +50,16 @@ def run():
 
         images = request.json["input_files"]
         config = request.json["options"]
+        run_id = random.getrandbits(16)
 
-        all_objs = detection.main(images, image_dir, cache_dir)
-        all_objs = filtering.main(all_objs, images, image_dir)
-        all_clusters = clustering.main(all_objs, images, image_dir)
-        postprocessing.main(all_clusters, images, data_dir, image_dir)
+        print("Detection Stage...")
+        all_objs = detection.main(images, image_dir, cache_dir, config["detection"], run_id)
+        print("Filtering Stage...")
+        all_objs = filtering.main(all_objs, images, image_dir, config["filtering"], run_id)
+        print("Clustering Stage...")
+        all_clusters = clustering.main(all_objs, images, image_dir, config["clustering"], run_id)
+        print("PostProcessing Stage...")
+        postprocessing.main(all_clusters, images, data_dir, image_dir, config["postprocessing"], run_id)
 
         return {"image_dir": image_dir, "data_dir": data_dir, "error": None}
     except Exception as ex:

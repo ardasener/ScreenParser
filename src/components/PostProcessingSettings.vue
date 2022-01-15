@@ -7,6 +7,7 @@
         max="50"
         step="1"
         thumb-label="always"
+        @change="save"
     ></v-slider>
     <v-slider
         v-model="num_swaps"
@@ -15,8 +16,8 @@
         max="20"
         step="1"
         thumb-label="always"
+        @change="save"
     ></v-slider>
-    <v-btn color="primary" @click="save">Save</v-btn>
   </v-form>
 </template>
 

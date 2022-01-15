@@ -2,16 +2,13 @@ import cv2
 from screen_object import ScreenObject
 import pickle
 import sys
-from find_image import find_image
 import os
 
-def filter(objs, image):
+def filter(objs, image, config):
 
     size = len(objs)
 
     remove_set = set()
-
-    thresh = 0.8
 
     img_height, img_width, _ = image.shape
     img_area = img_height*img_width
@@ -19,17 +16,19 @@ def filter(objs, image):
     for i in range(size):
       obj1 = objs[i]
 
-      if obj1.area() > img_area*0.5:
+      if obj1.area() > img_area * config["large_obj_threshold"]:
         remove_set.add(obj1)
         continue
 
-      if obj1.width() < img_width*0.01:
+      if obj1.width() < img_width * config["small_obj_threshold"]:
         remove_set.add(obj1)
         continue
 
-      if obj1.height() < img_height*0.01:
+      if obj1.height() < img_height * config["small_obj_threshold"]:
         remove_set.add(obj1)
         continue
+
+      thresh = config["intersection_threshold"]
 
       for j in range(i + 1, size):
 
@@ -44,7 +43,7 @@ def filter(objs, image):
               if inter_area > (obj2.area() * thresh):
                   remove_set.add(obj2)
           else:
-              if inter_area > (obj2.area() * 0.6) and inter_area > (obj1.area() * 0.6):
+              if inter_area > (obj2.area() * thresh) and inter_area > (obj1.area() * thresh):
                 if obj1.area() < obj2.area():
                   remove_set.add(obj1)
                 else:
@@ -60,10 +59,10 @@ def filter(objs, image):
     print("Removed:", len(objs)-len(new_objs))
 
 
-    objs = new_objs
+    return new_objs
 
 
-def text_merge(objs, image):
+def text_merge(objs, image, config):
 
     img_height, img_width, _ = image.shape
     img_area = img_height*img_width
@@ -96,7 +95,8 @@ def text_merge(objs, image):
         ver_diff = obj1.vertical_distance(obj2)
         hor_diff = horizontal_diff(obj1,obj2)
 
-        if  ver_diff < img_height*0.01 and hor_diff < img_width*0.01:
+        thresh = config["text_merge_threshold"]
+        if  ver_diff < img_height*thresh and hor_diff < img_width*thresh:
           print(i,j)
           merge_index = max([merge_indices[i], merge_indices[j]])
 
@@ -127,9 +127,9 @@ def text_merge(objs, image):
       if obj not in remove_set:
         new_objs.append(obj)
 
-    objs = new_objs
+    return new_objs
 
-def icon_text_merge(objs, image):
+def icon_text_merge(objs, image, config):
     img_height, img_width, _ = image.shape
     img_area = img_height*img_width
 
@@ -153,7 +153,7 @@ def icon_text_merge(objs, image):
           min_dist = dist
           min_text = text
 
-      if min_dist < img_width*0.15:
+      if min_dist < img_width * config["icon_text_merge_threshold"]:
         print("Merging:", min_text.text)
         min_text.merge(icon)
         remove_set.add(icon)
@@ -164,18 +164,24 @@ def icon_text_merge(objs, image):
         new_objs.append(obj)
 
 
-    objs = new_objs
+    return new_objs
 
 
-def main(all_objs, image_files, image_dir):
+def main(all_objs, image_files, image_dir, config, run_id):
+
+    print(config)
+
     new_all_objs = []
     for image_id,objs in enumerate(all_objs):
         image_file = image_files[image_id]
         image = cv2.imread(image_file)
 
-        filter(objs, image)
-        text_merge(objs, image)
-        icon_text_merge(objs, image)
+        print("Applying filtering...")
+        objs = filter(objs, image, config)
+        print("Applying text/text merge...")
+        objs = text_merge(objs, image, config)
+        print("Applying text/icon merge...")
+        objs = icon_text_merge(objs, image, config)
 
 
         filename = os.path.basename(image_file).split(".")[0]
@@ -183,7 +189,7 @@ def main(all_objs, image_files, image_dir):
           x1,y1,x2,y2 = obj.get_xyxy()
           cv2.rectangle(image, (x1,y1), (x2,y2), (125,125,0), 2)
 
-        cv2.imwrite(os.path.join(image_dir, filename + ".filtering.jpg"),image)
+        cv2.imwrite(os.path.join(image_dir, filename + "_" + str(run_id) + ".filtering.jpg"),image)
         new_all_objs.append(objs)
 
     return new_all_objs

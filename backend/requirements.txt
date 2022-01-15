@@ -1,0 +1,9 @@
+opencv-python==4.5.4.60
+opencv-contrib-python==4.5.4.60
+imagehash
+easyocr
+flask
+flask-cors
+appdirs
+scikit-learn
+crc32c

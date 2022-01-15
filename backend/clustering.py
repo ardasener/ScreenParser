@@ -18,7 +18,7 @@ def compute_menu(cls):
   return menu
 
 
-def prepare_data(objs):
+def prepare_data(objs, config):
 
     ver_dists = {obj: [] for obj in objs}
     hor_dists = {obj: [] for obj in objs}
@@ -29,10 +29,10 @@ def prepare_data(objs):
           hor_dists[obj1].append(obj1.horizontal_distance(obj2))
 
 
-    position_weight = 0.4
-    size_weight = 0.1
-    obj_type_weight = 0
-    padding_weight = 0.5
+    position_weight = config["position_weight"]
+    size_weight = config["size_weight"]
+    obj_type_weight = config["type_weight"]
+    padding_weight = config["padding_weight"]
 
     data = []
     for obj in objs:
@@ -56,28 +56,41 @@ def prepare_data(objs):
     normalized_data = Normalizer().fit_transform(data)
     return normalized_data
 
-def dbscan(data):
-    db = cluster.DBSCAN(eps=0.2, min_samples=3).fit(data)
+def dbscan(data, config):
+    db = cluster.DBSCAN(eps=config["dbscan_eps"], min_samples=config["dbscan_min_samples"]).fit(data)
     db_labels = db.labels_
     return db_labels
 
-def meanshift(data):
-    bandwidth = cluster.estimate_bandwidth(normalized_data, quantile=0.3, n_samples=10)
+def meanshift(data, config):
+    bandwidth = cluster.estimate_bandwidth(normalized_data, quantile=config["ms_quantile"], n_samples=config["ms_n_samples"])
     ms = cluster.MeanShift(bandwidth=bandwidth, bin_seeding=True).fit(data)
     ms_labels = ms.labels_
+    return ms_labels
 
 def affinity_prop(data):
     af = cluster.AffinityPropagation(random_state=0).fit(data)
     af_labels = af.labels_
+    return af_labels
 
 
-def main(all_objs, image_files ,image_dir):
+def main(all_objs, image_files ,image_dir, config, run_id):
+
+    print(config)
 
     all_clusters = []
     for image_id,objs in enumerate(all_objs):
 
-        data = prepare_data(objs)
-        labels = dbscan(data)
+        data = prepare_data(objs, config)
+
+        labels = None
+        method = config["clustering_alg"]
+        print("Clustering with method: {} ...".format(method))
+        if method == "dbscan":
+            labels = dbscan(data, config)
+        elif method == "meanshift":
+            labels = meanshift(data, config)
+        else:
+            labels = affinity_prop(data)
 
         clusters = {label:set() for label in labels}
         for i,obj in enumerate(objs):
@@ -92,7 +105,7 @@ def main(all_objs, image_files ,image_dir):
         filename = os.path.basename(image_file).split(".")[0]
         for i,menu in enumerate(menus):
             cv2.rectangle(image, (menu[0], menu[1]), (menu[2], menu[3]), colors.get_color(i),2)
-        cv2.imwrite(os.path.join(image_dir, filename + ".clustering.jpg"),image)
+        cv2.imwrite(os.path.join(image_dir, filename + "_" + str(run_id) + ".clustering.jpg"),image)
 
         all_clusters.append(clusters)
 

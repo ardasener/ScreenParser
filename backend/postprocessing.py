@@ -23,7 +23,7 @@ def intersects(b1, b2):
   ver_diff = (b1[2] < b2[0]) or (b2[2] < b2[0])
   return not (hor_diff or ver_diff)
 
-def solve_intersection(cls1, cls2):
+def solve_intersection(cls1, cls2, config):
   if cls1 == cls2:
     return
 
@@ -40,7 +40,7 @@ def solve_intersection(cls1, cls2):
 
     inter_objs = [obj for obj in set.union(cls1,cls2) if intersects(obj.get_xyxy(), intersection)]
 
-    for i in range(1,3):
+    for i in range(1,config["num_swaps"]):
 
       if len(inter_objs) < i:
           break
@@ -93,13 +93,16 @@ def clusters_to_xml(clusters, filename):
     tree.write(filename)
 
 
-def main(all_clusters, image_files, data_dir, image_dir):
+def main(all_clusters, image_files, data_dir, image_dir, config, run_id):
+
+    print(config)
+
     for image_id,clusters in enumerate(all_clusters):
 
-        for _ in range(3):
+        for _ in range(config["num_passes"]):
           for cls1 in clusters.values():
             for cls2 in clusters.values():
-              solve_intersection(cls1,cls2)
+              solve_intersection(cls1,cls2, config)
 
         image_file = image_files[image_id]
         filename = os.path.basename(image_file).split(".")[0]
@@ -109,6 +112,6 @@ def main(all_clusters, image_files, data_dir, image_dir):
 
         for i,menu in enumerate(menus):
             cv2.rectangle(image, (menu[0], menu[1]), (menu[2], menu[3]), colors.get_color(i),2)
-        cv2.imwrite(os.path.join(image_dir, filename + ".final.jpg"),image)
+        cv2.imwrite(os.path.join(image_dir, filename + "_" + str(run_id) + ".final.jpg"),image)
 
         clusters_to_xml(clusters, os.path.join(data_dir, filename + ".xml"))

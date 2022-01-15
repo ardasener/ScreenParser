@@ -11,7 +11,7 @@
           </template>
         </v-stepper-header>
       </v-stepper>
-      <v-row v-if="current_step === 1">
+      <v-row v-show="current_step === 1">
         <v-file-input
             placeholder="Pick image files"
             multiple
@@ -23,22 +23,22 @@
             @change="load_files"
         ></v-file-input>
       </v-row>
-      <v-row v-if="current_step !== 1 && current_step !== 6">
+      <v-row v-show="current_step !== 1 && current_step !== 6">
         <v-col align="center" justify="center" style="max-height: 80%" class="overflow-y-auto">
-          <viewer :images="images">
-            <img class="m-5" v-for="src in images" :key="src" :src="src" width="60%">
+          <viewer :images="images()">
+            <img class="m-5" v-for="src in images()" :key="src" :src="src" width="60%">
           </viewer>
         </v-col>
         <v-col class="m-10 p-5">
-          <detection-settings v-if="current_step === 2"></detection-settings>
-          <filtering-settings v-if="current_step === 3"></filtering-settings>
-          <clustering-settings v-if="current_step === 4"></clustering-settings>
-          <post-processing-settings v-if="current_step === 5"></post-processing-settings>
+          <detection-settings v-show="current_step === 2"></detection-settings>
+          <filtering-settings v-show="current_step === 3"></filtering-settings>
+          <clustering-settings v-show="current_step === 4"></clustering-settings>
+          <post-processing-settings v-show="current_step === 5"></post-processing-settings>
         </v-col>
       </v-row>
       <v-row align="center" justify="center" class="m-10" v-if="current_step === 6">
       </v-row>
-      <runner></runner>
+      <runner @runFinished="rerender"></runner>
     </v-main>
   </v-app>
 </template>
@@ -77,12 +77,22 @@ export default {
     input_files: [],
     steps: steps,
     current_step: 1,
-    xml_output: "<Hello><World></World></Hello>"
+    xml_output: "<Hello><World></World></Hello>",
   }),
   mounted() {
     this.$vuetify.theme.dark = true
   },
-  computed: {
+  computed: {},
+  methods: {
+    load_files: function(){
+      console.log()
+      const paths = this.input_files.map((file) => {return file.path})
+      this.$store.commit("setInputFiles", paths)
+    },
+    rerender: function (){
+      console.log("Rerendering...")
+      this.$forceUpdate()
+    },
     images: function (){
       var filter_word = ""
 
@@ -101,16 +111,10 @@ export default {
       const image_dir = this.$store.state.image_dir
       const images = fs.readdirSync(image_dir)
 
-      const filtered = images.filter((image) => {return image.includes(filter_word)}).map((image) => {return "local-resource://"+path.join(image_dir, image)})
+      const filtered = images.filter((image) => {return image.includes(filter_word)}).map((image) =>
+      {return "local-resource://"+path.join(image_dir, image)})
       console.log(filtered)
       return filtered
-    }
-  },
-  methods: {
-    load_files: function(){
-      console.log()
-      const paths = this.input_files.map((file) => {return file.path})
-      this.$store.commit("setInputFiles", paths)
     }
   }
 };

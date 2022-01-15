@@ -1,8 +1,8 @@
 <template>
   <v-form>
-    <v-switch v-model="blur" label="Apply Blur"></v-switch>
-    <v-switch v-model="ocr" label="Use OCR"></v-switch>
-    <v-switch v-model="gpu" label="Use GPU for OCR"></v-switch>
+    <v-switch v-model="blur" label="Apply Blur" @change="save"></v-switch>
+    <v-switch v-model="ocr" label="Use OCR" @change="save"></v-switch>
+    <v-switch v-model="gpu" label="Use GPU for OCR" @change="save"></v-switch>
     <v-select
       v-model="selected_langs"
       :items="ocr_langs"
@@ -11,8 +11,8 @@
       chips
       label="OCR Languages"
       multiple
+      @change="save"
     ></v-select>
-    <v-btn color="primary" @click="save">Save</v-btn>
   </v-form>
 </template>
 

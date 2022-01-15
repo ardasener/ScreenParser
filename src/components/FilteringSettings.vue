@@ -7,6 +7,7 @@
             max="1"
             step="0.1"
             thumb-label="always"
+            @change="save"
         ></v-slider>
         <v-slider
             v-model="small_obj_threshold"
@@ -15,6 +16,7 @@
             max="0.1"
             step="0.01"
             thumb-label="always"
+            @change="save"
         ></v-slider>
         <v-slider
             v-model="intersection_threshold"
@@ -23,6 +25,7 @@
             max="1"
             step="0.1"
             thumb-label="always"
+            @change="save"
         ></v-slider>
         <v-slider
             v-model="text_merge_threshold"
@@ -31,6 +34,7 @@
             max="1"
             step="0.01"
             thumb-label="always"
+            @change="save"
         ></v-slider>
         <v-slider
             v-model="icon_text_merge_threshold"
@@ -39,8 +43,8 @@
             max="1"
             step="0.01"
             thumb-label="always"
+            @change="save"
         ></v-slider>
-      <v-btn color="primary" @click="save">Save</v-btn>
     </v-form>
 </template>
 

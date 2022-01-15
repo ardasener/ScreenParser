@@ -7,6 +7,7 @@
       max="1"
       step="0.1"
       thumb-label="always"
+      @change="save"
     ></v-slider>
     <v-slider
       v-model="size_weight"
@@ -15,6 +16,7 @@
       max="1"
       step="0.1"
       thumb-label="always"
+      @change="save"
     ></v-slider>
     <v-slider
       v-model="type_weight"
@@ -23,6 +25,7 @@
       max="1"
       step="0.1"
       thumb-label="always"
+      @change="save"
     ></v-slider>
     <v-slider
       v-model="padding_weight"
@@ -31,11 +34,12 @@
       max="1"
       step="0.1"
       thumb-label="always"
+      @change="save"
     ></v-slider>
-    <v-radio-group v-model="clustering_alg" row class="m-5">
+    <v-radio-group v-model="clustering_alg" row class="m-5" @change="save">
       <v-radio label="DBScan" value="dbscan"></v-radio>
       <v-radio label="MeanShift" value="meanshift"></v-radio>
-      <v-radio label="Affinity Propagation"></v-radio>
+      <v-radio label="Affinity Propagation" value="affinity_prop"></v-radio>
     </v-radio-group>
      <v-slider
       v-model="dbscan_eps"
@@ -45,6 +49,7 @@
       max="1"
       step="0.05"
       thumb-label="always"
+      @change="save"
     ></v-slider>
     <v-slider
       v-model="dbscan_min_samples"
@@ -54,6 +59,7 @@
       max="100"
       step="1"
       thumb-label="always"
+      @change="save"
     ></v-slider>
     <v-slider
       v-model="ms_quantile"
@@ -63,6 +69,7 @@
       max="1"
       step="0.05"
       thumb-label="always"
+      @change="save"
     ></v-slider>
     <v-slider
       v-model="ms_n_samples"
@@ -72,8 +79,8 @@
       max="100"
       step="1"
       thumb-label="always"
+      @change="save"
     ></v-slider>
-    <v-btn color="primary" @click="save">Save</v-btn>
   </v-form>
 </template>
 
