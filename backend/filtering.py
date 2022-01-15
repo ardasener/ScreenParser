@@ -187,7 +187,7 @@ def main(all_objs, image_files, image_dir, config, run_id):
         filename = os.path.basename(image_file).split(".")[0]
         for obj in objs:
           x1,y1,x2,y2 = obj.get_xyxy()
-          cv2.rectangle(image, (x1,y1), (x2,y2), (125,125,0), 2)
+          cv2.rectangle(image, (x1,y1), (x2,y2), (125,125,0), 3)
 
         cv2.imwrite(os.path.join(image_dir, filename + "_" + str(run_id) + ".filtering.jpg"),image)
         new_all_objs.append(objs)

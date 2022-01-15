@@ -18,15 +18,21 @@ def compute_menu(cls):
   return menu
 
 
-def prepare_data(objs, config):
+def prepare_data(objs, image, config):
+    img_height, img_width, _ = image.shape
+    img_area = img_height*img_width
 
     ver_dists = {obj: [] for obj in objs}
     hor_dists = {obj: [] for obj in objs}
     for obj1 in objs:
       for obj2 in objs:
         if obj1 != obj2:
-          ver_dists[obj1].append(obj1.vertical_distance(obj2))
-          hor_dists[obj1].append(obj1.horizontal_distance(obj2))
+          ver_dist = obj1.vertical_distance(obj2)
+          hor_dist = obj1.horizontal_distance(obj2)
+          if ver_dist > img_height*0.01:
+            ver_dists[obj1].append(ver_dist)
+          if hor_dist > img_width*0.01:
+            hor_dists[obj1].append(hor_dist)
 
 
     position_weight = config["position_weight"]
@@ -48,8 +54,8 @@ def prepare_data(objs, config):
       # Whether it is a text object
       point += [int(obj.text != "")*obj_type_weight] # Index 3 is object type
 
-      point += [min(ver_dists[obj])]
-      point += [min(hor_dists[obj])]
+      point += [min(ver_dists[obj])*padding_weight if len(ver_dists[obj]) > 0 else 0]
+      point += [min(hor_dists[obj])*padding_weight if len(hor_dists[obj]) > 0 else 0]
 
       data.append(point)
 
@@ -62,7 +68,7 @@ def dbscan(data, config):
     return db_labels
 
 def meanshift(data, config):
-    bandwidth = cluster.estimate_bandwidth(normalized_data, quantile=config["ms_quantile"], n_samples=config["ms_n_samples"])
+    bandwidth = cluster.estimate_bandwidth(data, quantile=config["ms_quantile"], n_samples=config["ms_n_samples"])
     ms = cluster.MeanShift(bandwidth=bandwidth, bin_seeding=True).fit(data)
     ms_labels = ms.labels_
     return ms_labels
@@ -79,8 +85,10 @@ def main(all_objs, image_files ,image_dir, config, run_id):
 
     all_clusters = []
     for image_id,objs in enumerate(all_objs):
+        image_file = image_files[image_id]
+        image = cv2.imread(image_file)
 
-        data = prepare_data(objs, config)
+        data = prepare_data(objs, image, config)
 
         labels = None
         method = config["clustering_alg"]
@@ -100,11 +108,10 @@ def main(all_objs, image_files ,image_dir, config, run_id):
         menus = [compute_menu(cls) for cls in clusters.values()]
 
 
-        image_file = image_files[image_id]
-        image = cv2.imread(image_file)
+
         filename = os.path.basename(image_file).split(".")[0]
         for i,menu in enumerate(menus):
-            cv2.rectangle(image, (menu[0], menu[1]), (menu[2], menu[3]), colors.get_color(i),2)
+            cv2.rectangle(image, (menu[0], menu[1]), (menu[2], menu[3]), colors.get_color(i),3)
         cv2.imwrite(os.path.join(image_dir, filename + "_" + str(run_id) + ".clustering.jpg"),image)
 
         all_clusters.append(clusters)

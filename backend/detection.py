@@ -110,7 +110,7 @@ def main(image_files, image_dir, cache_dir, config, run_id):
 
             for obj in objs2:
               x1,y1,x2,y2 = obj.get_xyxy()
-              cv2.rectangle(img_objs, (x1,y1), (x2,y2), (100,0,125), 2)
+              cv2.rectangle(img_objs, (x1,y1), (x2,y2), (100,0,125), 3)
 
             objs += objs2
         else:

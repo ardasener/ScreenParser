@@ -111,7 +111,7 @@ def main(all_clusters, image_files, data_dir, image_dir, config, run_id):
         menus = [compute_menu(cls) for cls in clusters.values()]
 
         for i,menu in enumerate(menus):
-            cv2.rectangle(image, (menu[0], menu[1]), (menu[2], menu[3]), colors.get_color(i),2)
+            cv2.rectangle(image, (menu[0], menu[1]), (menu[2], menu[3]), colors.get_color(i),3)
         cv2.imwrite(os.path.join(image_dir, filename + "_" + str(run_id) + ".final.jpg"),image)
 
         clusters_to_xml(clusters, os.path.join(data_dir, filename + ".xml"))

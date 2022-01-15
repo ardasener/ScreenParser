@@ -39,6 +39,7 @@
       <v-row align="center" justify="center" class="m-10" v-if="current_step === 6">
       </v-row>
       <runner @runFinished="rerender"></runner>
+      <setup v-if="setup" @setupDone="setup = false"></setup>
     </v-main>
   </v-app>
 </template>
@@ -48,7 +49,8 @@ import ClusteringSettings from "./components/ClusteringSettings.vue";
 import DetectionSettings from './components/DetectionSettings.vue';
 import FilteringSettings from './components/FilteringSettings.vue';
 import PostProcessingSettings from './components/PostProcessingSettings.vue';
-import Runner from "./components/Runner";
+import Setup from './components/Setup.vue'
+import Runner from "./components/Runner.vue";
 
 const fs = require("fs")
 const path = require("path")
@@ -59,7 +61,7 @@ const steps = [
   "Object Filtering",
   "Clustering",
   "Post Processing",
-  "Output",
+  "Output"
 ]
 
 export default {
@@ -71,6 +73,7 @@ export default {
     DetectionSettings,
     FilteringSettings,
     PostProcessingSettings,
+    Setup
   },
 
   data: () => ({
@@ -78,6 +81,7 @@ export default {
     steps: steps,
     current_step: 1,
     xml_output: "<Hello><World></World></Hello>",
+    setup : true,
   }),
   mounted() {
     this.$vuetify.theme.dark = true

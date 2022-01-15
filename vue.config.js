@@ -4,7 +4,16 @@ module.exports = {
   ],
   pluginOptions: {
     electronBuilder: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      builderOptions: {
+        extraFiles: [
+          {
+            from: "backend",
+            to: "backend",
+            filter: ["**/*"]
+          }
+        ]
+      }
     }
   }
 }

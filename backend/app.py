@@ -50,7 +50,7 @@ def run():
 
         images = request.json["input_files"]
         config = request.json["options"]
-        run_id = random.getrandbits(16)
+        run_id = random.getrandbits(32)
 
         print("Detection Stage...")
         all_objs = detection.main(images, image_dir, cache_dir, config["detection"], run_id)
@@ -64,3 +64,6 @@ def run():
         return {"image_dir": image_dir, "data_dir": data_dir, "error": None}
     except Exception as ex:
         return {"image_dir": image_dir, "data_dir": data_dir, "error": str(ex)}
+
+if __name__ == '__main__':
+    app.run(host='127.0.0.1', port=5111)

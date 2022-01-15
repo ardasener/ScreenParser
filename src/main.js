@@ -7,12 +7,10 @@ import VueViewer from "v-viewer";
 import 'viewerjs/dist/viewer.css'
 import store from "./store"
 
+// Start Vue
 Vue.config.productionTip = false
-
 Vue.use(VueHighlightJS)
-
 Vue.use(VueViewer)
-
 new Vue({
   vuetify,
   store,

@@ -49,12 +49,17 @@ export default {
       if(this.status === "idle"){
         this.status = "working"
 
-        axios.post("http://127.0.0.1:5000/run", {input_files: this.$store.state.input_files, options: this.$store.state.options})
+        axios.post("http://127.0.0.1:5111/run", {input_files: this.$store.state.input_files, options: this.$store.state.options})
             .then((response) => {
               this.status = "idle"
               console.log(response)
               this.$store.commit("setImageDir", response.data.image_dir)
               this.$store.commit("setDataDir", response.data.data_dir)
+              if(response.data.error){
+                this.status = "error"
+                this.error_msg = response.data.error
+                console.log(response.data.error)
+              }
               this.$emit('runFinished')
             })
             .catch((error) => {
