@@ -79,6 +79,9 @@ yarn electron:serve
 
 > First command will install the dependencies, the second command will start the program.
 
+> It is technically possible to build the application and distribute it in binary form.
+> However I wasn't able to iron out the bugs in the release version (mostly related to file paths).
+
 ## Using the GUI
 
 At the start the GUI will ask you to enter the python executable. 
@@ -110,3 +113,12 @@ As mentioned previously, the GUI will also produce a config file in the output d
 alongside the regular xml output. This config file can be used in the command-line interface.
 The ideal use case here is for the user to use the GUI to fine tune the algorithm and then
 use the exported config file to automate the process.
+
+## Known Bugs
+
+### Broken Pipe
+
+Occasionally the GUI might give a broken pipe error.
+If this occurs the green run button will turn red and clicking on it will print the error.
+I was not able to detect the cause of this problem.
+However, usually just clicking run again fixes the issue temporarily.

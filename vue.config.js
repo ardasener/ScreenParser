@@ -9,7 +9,7 @@ module.exports = {
         extraFiles: [
           {
             from: "backend",
-            to: "backend",
+            to: "./resources/app.asar.unpacked/backend",
             filter: ["**/*"]
           }
         ]

@@ -17,8 +17,8 @@ const path = require("path")
 const {exec} = require("child_process")
 import axios from 'axios';
 
-
-const root_path = ".";
+const root_path = "."
+console.log(root_path)
 const backend_path = path.join(root_path, "backend")
 const requirements_path = path.join(backend_path, "requirements.txt")
 const app_path = path.join(backend_path, "app.py")

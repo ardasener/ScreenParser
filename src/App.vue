@@ -24,11 +24,14 @@
         ></v-file-input>
       </v-row>
       <v-row v-show="current_step !== 1 && current_step !== 6">
-        <v-col align="center" justify="center" >
-          <v-card   elevation="2"
-                    class="overflow-y-auto m-10" height="70vh" justify="center" align="center">
+        <v-col align="center" justify="center">
+          <v-card elevation="2"
+                  class="overflow-y-auto m-10"
+                  height="80vh"
+                  justify="center"
+                  align="center">
             <viewer :images="images()">
-              <img class="m-5" v-for="src in images()" :key="src" :src="src" width="60%">
+              <img class="m-5" v-for="src in images()" :key="src" :src="src" width="50%" height="50%">
             </viewer>
           </v-card>
         </v-col>
@@ -41,8 +44,14 @@
       </v-row>
       <v-row align="center" justify="center" class="m-10" v-if="current_step === 6">
         <v-form class="m-5">
-          <v-btn class="m-2" @click="show_data"><v-icon left>mdi-code-tags</v-icon>Show Output Folder</v-btn>
-          <v-btn class="m-2" @click="show_images"><v-icon left>mdi-image</v-icon>Show Images Folder</v-btn>
+          <v-btn class="m-2" @click="show_data">
+            <v-icon left>mdi-code-tags</v-icon>
+            Show Output Folder
+          </v-btn>
+          <v-btn class="m-2" @click="show_images">
+            <v-icon left>mdi-image</v-icon>
+            Show Images Folder
+          </v-btn>
         </v-form>
       </v-row>
       <runner @runFinished="rerender"></runner>
@@ -89,7 +98,7 @@ export default {
     input_files: [],
     steps: steps,
     current_step: 1,
-    setup : true,
+    setup: true,
     current_output: 0,
   }),
   mounted() {
@@ -97,25 +106,27 @@ export default {
   },
   computed: {},
   methods: {
-    load_files: function(){
+    load_files: function () {
       console.log()
-      const paths = this.input_files.map((file) => {return file.path})
+      const paths = this.input_files.map((file) => {
+        return file.path
+      })
       this.$store.commit("setInputFiles", paths)
     },
-    rerender: function (){
+    rerender: function () {
       console.log("Rerendering...")
       this.$forceUpdate()
     },
-    images: function (){
+    images: function () {
       var filter_word = ""
 
-      if(this.current_step === 2){
+      if (this.current_step === 2) {
         filter_word = "detection"
-      } else if(this.current_step  === 3){
+      } else if (this.current_step === 3) {
         filter_word = "filtering"
-      } else if(this.current_step  === 4){
+      } else if (this.current_step === 4) {
         filter_word = "clustering"
-      } else if(this.current_step  === 5){
+      } else if (this.current_step === 5) {
         filter_word = "final"
       } else {
         return []
@@ -124,20 +135,47 @@ export default {
       const image_dir = this.$store.state.image_dir
       const images = fs.readdirSync(image_dir)
 
-      const filtered = images.filter((image) => {return image.includes(filter_word)}).map((image) =>
-      {return "local-resource://"+path.join(image_dir, image)})
+      const filtered = images.filter((image) => {
+        return image.includes(filter_word)
+      }).map((image) => {
+        return "local-resource://" + path.join(image_dir, image)
+      })
       filtered.sort()
       console.log(filtered)
       return filtered
     },
-    show_data: function (){
+    show_data: function () {
       console.log(this.$store.state.data_dir)
       shell.openPath(this.$store.state.data_dir)
     },
-    show_images: function (){
+    show_images: function () {
       console.log(this.$store.state.image_dir)
       shell.openPath(this.$store.state.image_dir)
     }
   }
 };
 </script>
+
+<style>
+/* HIDE THE MAIN SCROLLBAR */
+html, body {
+  overflow-y: hidden;
+}
+
+/* CUSTOM SCROLLBAR */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #303030;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2196F3;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2196F3;
+}
+</style>
