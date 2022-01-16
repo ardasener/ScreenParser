@@ -24,10 +24,13 @@
         ></v-file-input>
       </v-row>
       <v-row v-show="current_step !== 1 && current_step !== 6">
-        <v-col align="center" justify="center" style="max-height: 80%" class="overflow-y-auto">
-          <viewer :images="images()">
-            <img class="m-5" v-for="src in images()" :key="src" :src="src" width="60%">
-          </viewer>
+        <v-col align="center" justify="center" >
+          <v-card   elevation="2"
+                    class="overflow-y-auto m-10" height="70vh" justify="center" align="center">
+            <viewer :images="images()">
+              <img class="m-5" v-for="src in images()" :key="src" :src="src" width="60%">
+            </viewer>
+          </v-card>
         </v-col>
         <v-col class="m-10 p-5">
           <detection-settings v-show="current_step === 2"></detection-settings>
@@ -37,6 +40,10 @@
         </v-col>
       </v-row>
       <v-row align="center" justify="center" class="m-10" v-if="current_step === 6">
+        <v-form class="m-5">
+          <v-btn class="m-2" @click="show_data"><v-icon left>mdi-code-tags</v-icon>Show Output Folder</v-btn>
+          <v-btn class="m-2" @click="show_images"><v-icon left>mdi-image</v-icon>Show Images Folder</v-btn>
+        </v-form>
       </v-row>
       <runner @runFinished="rerender"></runner>
       <setup v-if="setup" @setupDone="setup = false"></setup>
@@ -52,8 +59,10 @@ import PostProcessingSettings from './components/PostProcessingSettings.vue';
 import Setup from './components/Setup.vue'
 import Runner from "./components/Runner.vue";
 
+
 const fs = require("fs")
 const path = require("path")
+const {shell} = require('electron')
 
 const steps = [
   "Input",
@@ -73,15 +82,15 @@ export default {
     DetectionSettings,
     FilteringSettings,
     PostProcessingSettings,
-    Setup
+    Setup,
   },
 
   data: () => ({
     input_files: [],
     steps: steps,
     current_step: 1,
-    xml_output: "<Hello><World></World></Hello>",
     setup : true,
+    current_output: 0,
   }),
   mounted() {
     this.$vuetify.theme.dark = true
@@ -117,8 +126,17 @@ export default {
 
       const filtered = images.filter((image) => {return image.includes(filter_word)}).map((image) =>
       {return "local-resource://"+path.join(image_dir, image)})
+      filtered.sort()
       console.log(filtered)
       return filtered
+    },
+    show_data: function (){
+      console.log(this.$store.state.data_dir)
+      shell.openPath(this.$store.state.data_dir)
+    },
+    show_images: function (){
+      console.log(this.$store.state.image_dir)
+      shell.openPath(this.$store.state.image_dir)
     }
   }
 };

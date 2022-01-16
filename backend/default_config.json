@@ -1,0 +1,36 @@
+{
+  "images": [],
+  "options": {
+    "detection": {
+      "blur": true,
+      "ocr": true,
+      "gpu": false,
+      "selected_langs": [
+        "en"
+      ],
+      "ocr_langs": null
+    },
+    "filtering": {
+      "large_obj_threshold": 0.5,
+      "small_obj_threshold": 0.01,
+      "intersection_threshold": 0.6,
+      "text_merge_threshold": 0.01,
+      "icon_text_merge_threshold": 0.15
+    },
+    "clustering": {
+      "position_weight": 0.7,
+      "size_weight": 0.1,
+      "type_weight": 0,
+      "padding_weight": 0.5,
+      "clustering_alg": "dbscan",
+      "dbscan_eps": 0.3,
+      "dbscan_min_samples": 3,
+      "ms_quantile": 0.3,
+      "ms_n_samples": 10
+    },
+    "postprocessing": {
+      "num_passes": 3,
+      "num_swaps": 2
+    }
+  }
+}
