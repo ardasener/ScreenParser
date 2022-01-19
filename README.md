@@ -5,6 +5,9 @@ It can be used either through a command-line interface or an experimental GUI.
 
 ## Requirements
 
+> Tests were conducted on Windows 10 and Arch Linux. No tests were conducted for OSX.
+> There is no guarantee that the system will work correctly on untested operating systems.
+
 ### Python
 
 These steps are required for both the GUI and the command-line interface.
@@ -64,8 +67,14 @@ The images to be processed can be specified in the config file's "images" option
 This must be a list of absolute paths of the files. See the example below.
 
 ```json
-"images": ["/home/arda/Projects/screenparserdata/DSLR/MagicLantern2.png", "/home/arda/Projects/screenparserdata/DSLR/MagicLantern1.png"]
+{
+  "images": ["/home/arda/Projects/screenparserdata/DSLR/MagicLantern2.png", "/home/arda/Projects/screenparserdata/DSLR/MagicLantern1.png"],
+  ...
+}
 ```
+
+> On Windows, the default "\" separators can cause problems with json (you will probably see an encoding related error.
+> In these cases use paths with UNIX style "/" separators or with escaped separators "\\".
 
 ## Running (GUI)
 
@@ -122,3 +131,13 @@ Occasionally the GUI might give a broken pipe error.
 If this occurs the green run button will turn red and clicking on it will print the error.
 I was not able to detect the cause of this problem.
 However, usually just clicking run again fixes the issue temporarily.
+
+### Backend Termination
+
+Backend might not always terminate after the GUI app is closed.
+It will not use too many resources however and can be manually killed from a system monitor.
+
+### Filenames
+
+Filenames containing keywords like detection, clustering etc. might be displayed wrongly on the GUI.
+There is an easy fix for this but it was not implemented due to time constraints.

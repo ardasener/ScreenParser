@@ -109,7 +109,7 @@ export default {
     load_files: function () {
       console.log()
       const paths = this.input_files.map((file) => {
-        return file.path
+        return path.normalize(file.path)
       })
       this.$store.commit("setInputFiles", paths)
     },

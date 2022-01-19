@@ -1,9 +1,11 @@
 {
-  "images": [],
+  "images": ["/home/arda/Pictures/Screenshot_20210923_214510.png"],
   "options": {
     "detection": {
       "blur": true,
       "ocr": true,
+      "ocr_threshold": 0.6,
+      "rgb_detection": false,
       "gpu": false,
       "selected_langs": [
         "en"

@@ -1,6 +1,7 @@
 <template>
   <v-form>
     <v-switch v-model="blur" label="Apply Blur" @change="save"></v-switch>
+    <v-switch v-model="rgb_detection" label="Use RGB Detection" @change="save"></v-switch>
     <v-switch v-model="ocr" label="Use OCR" @change="save"></v-switch>
     <v-switch v-model="gpu" label="Use GPU for OCR" @change="save"></v-switch>
     <v-select
@@ -13,6 +14,15 @@
       multiple
       @change="save"
     ></v-select>
+    <v-slider
+        v-model="ocr_threshold"
+        label="OCR Confidence Threshold"
+        min="0"
+        max="1"
+        step="0.05"
+        thumb-label="always"
+        @change="save"
+    ></v-slider>
   </v-form>
 </template>
 
@@ -23,10 +33,12 @@ export default {
   data: () => {
     return {
       blur: true,
+      rgb_detection: false,
       ocr: true,
       gpu: false,
       selected_langs: ['en'],
-      ocr_langs: ocr_langs
+      ocr_langs: ocr_langs,
+      ocr_threshold: 0.6,
     };
   },
   methods: {

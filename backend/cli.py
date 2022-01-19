@@ -38,7 +38,7 @@ def run(images, config):
                 path = os.path.join(data_dir, file)
                 os.remove(path)
 
-        run_id = random.getrandbits(32)
+        run_id = int(random.getrandbits(32))
 
         print("Detection Stage...")
         all_objs = detection.main(images, image_dir, cache_dir, config["detection"], run_id)

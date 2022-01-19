@@ -12,9 +12,10 @@ import crc32c
 def hash_config(config):
     langs = config["selected_langs"]
     langs.sort()
-    str_langs = ",".join(langs)
-    bytes_langs = str.encode(str_langs)
-    return str(crc32c.crc32c(bytes_langs))
+    s = ",".join(langs)
+    s += "," + str(config["ocr_threshold"])
+    b = str.encode(s)
+    return str(crc32c.crc32c(b))
 
 def main(image_files, image_dir, cache_dir, config, run_id):
 
@@ -51,6 +52,22 @@ def main(image_files, image_dir, cache_dir, config, run_id):
         contours, hierarchy = cv2.findContours(
             image=img_thres, mode=cv2.RETR_TREE, method=cv2.CHAIN_APPROX_NONE)
 
+
+        if(config["rgb_detection"]):
+            img_blue, img_green, img_red = cv2.split(image)
+
+            for img in [img_gray, img_blue, img_red, img_green]:
+
+              img_blur = img_gray.copy()
+              if(config["blur"]):
+                img_blur = cv2.GaussianBlur(img_gray,(5,5),1)
+
+              ret, img_thres = cv2.threshold(img_blur, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+
+              new_contours, hierarchy = cv2.findContours(
+                  image=img_thres, mode=cv2.RETR_TREE, method=cv2.CHAIN_APPROX_NONE)
+
+              contours += new_contours
 
         # Get bounding boxes of contours and create the screen objects using them
         objs = []
@@ -94,7 +111,7 @@ def main(image_files, image_dir, cache_dir, config, run_id):
 
                 objs2 = []
                 for points, text, confidence in results:
-                  if confidence > 0.6:
+                  if confidence > config["ocr_threshold"]:
                     x1 = int(points[0][0])
                     x2 = int(points[1][0])
                     y1 = int(points[0][1])

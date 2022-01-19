@@ -9,10 +9,12 @@ const store = new Vuex.Store({
         options: {
             detection: {
                 blur: true,
+                rgb_detection: false,
                 ocr: true,
                 gpu: false,
                 selected_langs: ['en'],
-                ocr_langs: ocr_langs
+                ocr_langs: null,
+                ocr_threshold: 0.6,
             },
             filtering: {
                 large_obj_threshold: 0.5,
