@@ -1,6 +1,5 @@
 import Vuex from 'vuex'
 import Vue from "vue";
-import ocr_langs from "./assets/ocr_langs.json";
 
 Vue.use(Vuex)
 
